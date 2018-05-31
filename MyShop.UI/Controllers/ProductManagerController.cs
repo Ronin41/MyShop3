@@ -5,16 +5,20 @@ using System.Web;
 using System.Web.Mvc;
 using MyShop.DataAccess.InMemory;
 using MyShop.Core.Models;
+using MyShop.Core.ViewModels;
 
 namespace MyShop.UI.Controllers
 {
     public class ProductManagerController : Controller
     {
         ProductRepository context;
+        ProductCategoryRepository productCategories;
+
 
         public ProductManagerController()
         {
             context = new ProductRepository();
+            productCategories = new ProductCategoryRepository();
         }
 
         // GET: ProductManager
@@ -29,9 +33,11 @@ namespace MyShop.UI.Controllers
 
         public ActionResult Create()
         {
-            Product product = new Product();
+            ProductManagerViewModel viewModel = new ProductManagerViewModel();
+            viewModel.Product = new Product();
+            viewModel.ProductCategories = productCategories.Collection();
 
-            return View(product);
+            return View(viewModel);
         }
 
 
@@ -56,12 +62,19 @@ namespace MyShop.UI.Controllers
         {
           
             Product product = context.Find(Id);
+
             if(product == null)
             {
                 return HttpNotFound();
             }else
             {
-                return View(product);
+
+                ProductManagerViewModel viewModel = new ProductManagerViewModel();
+
+                viewModel.Product = product;
+                viewModel.ProductCategories = productCategories.Collection();
+
+                return View(viewModel);
             }
            
 
